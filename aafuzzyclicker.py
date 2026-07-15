@@ -34,6 +34,13 @@ except Exception:
     except Exception:
         pass
 
+# --- own taskbar identity so Windows shows our icon, not python's ---
+try:
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+        "GauthierDenjoy.AAFuzzyClicker")
+except Exception:
+    pass
+
 
 def virtual_screen():
     """(left, top, width, height) of the whole desktop, in physical pixels."""
@@ -113,7 +120,12 @@ class App:
 
         # window / taskbar icon
         try:
-            self.root.iconbitmap(LOGO_ICO)
+            self.root.iconbitmap(default=LOGO_ICO)
+        except Exception:
+            pass
+        try:
+            self._icon = ImageTk.PhotoImage(Image.open(LOGO_ICO))
+            self.root.iconphoto(True, self._icon)
         except Exception:
             pass
 
