@@ -62,6 +62,18 @@ def grab_gray():
     return gray, left, top
 
 
+def load_gray(path):
+    """Grayscale array of the image file, or None when unreadable."""
+    # cv2.imread cannot open paths with accents/unicode; imdecode can.
+    try:
+        data = np.fromfile(path, dtype=np.uint8)
+    except OSError:
+        return None
+    if data.size == 0:
+        return None
+    return cv2.imdecode(data, cv2.IMREAD_GRAYSCALE)
+
+
 class CaptureOverlay:
     """Fullscreen overlay to drag a box; saves the region as a PNG."""
 
@@ -217,7 +229,7 @@ class App:
         templates = []
         for f in sorted(os.listdir(BUTTONS_DIR)):
             if f.lower().endswith(".png"):
-                t = cv2.imread(os.path.join(BUTTONS_DIR, f), cv2.IMREAD_GRAYSCALE)
+                t = load_gray(os.path.join(BUTTONS_DIR, f))
                 if t is not None:
                     templates.append(t)
         for t in templates:
